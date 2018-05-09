@@ -6,28 +6,66 @@ Created on Sat Apr 28 12:34:03 2018
 """
 
 import numpy as np
+import random as rand
+#import matplotlib.pyplot as plt
+
+def sigmoid(x):
+    return np.exp(x)/(1+np.exp(x))
+
+#Tableau de test input/output
+T_input=[]
+T_output=[]
+
+#Remplissage des tableaux de test :
+iris_dataset = open("/home/giraudon/Documents/PONTS/COURS/NEURONES/iris_dataset.txt","r")
+contenu=iris_dataset.read()
+k=0
+compteur_colonne=0
+compteur_ligne=0
+while k<len(contenu):
+    T_input.append([0,0,0,0])
+    T_output.append([0,0,0])    
+    while contenu[k]!="I":
+        T_input[compteur_ligne][compteur_colonne]=float(contenu[k]+contenu[k+1]+contenu[k+2])
+        compteur_colonne+=1
+        k+=4
+    compteur_colonne=0
+    if contenu[k+5]+contenu[k+6]=="se":
+        T_output[compteur_ligne][0]=1
+        k+=12
+    elif contenu[k+5]+contenu[k+6]=="ve":
+        T_output[compteur_ligne][1]=1
+        k+=16
+    elif contenu[k+5]+contenu[k+6]=="vi":
+        T_output[compteur_ligne][2]=1
+        k+=15
+    compteur_ligne+=1
 
 #Divers variables
 
 #nombre de layers + input + output:
-N_layers=20
+N_layers=5
 
 #nombre d'input :
-N_input=1
+N_input=4
 
 #nombre d'output :
-N_output=101
-def sigmoid(x):
-    return np.exp(x)/(1+np.exp(x))
+N_output=3
+
+#taille des hidden layers :
+size_hidden_layers=7
     
 #nombre d'échantillons test :
-N_test=600
+N_test=len(T_input)
         
 #pas dans l'algorithme du gradient :
-delta=5*10e-2
+delta=2
 
 #nombre d'itérations dans l'algorithme du gradient :
-N_iter=15
+N_iter=10
+
+#nombre de fois qu'on entraine le réseau sur le dataset :
+N_test_data=15
 
 #Tableau d'entrée et de sortie : 
 INPUT=np.zeros((N_input))
@@ -39,10 +77,6 @@ Z=[]
 #Tableau des y :
 Y=[]
 
-#Tableau de test  input/output
-T_input=np.zeros((N_test,N_input))
-T_output=np.zeros((N_test,N_output))
-
 #Tableau des dérivées de l'erreur par rapport à y :
 ERR=[]
     
@@ -51,11 +85,8 @@ ERR=[]
 N=np.zeros((N_layers),dtype=int)
 
 N[0]=N_input
-N[1]=8
-N[2]=10
-for k in range(3,N_layers-2):
-    N[k]=12
-N[N_layers-2]=8
+for k in range(1,N_layers-1):
+    N[k]=size_hidden_layers
 N[N_layers-1]=N_output
     
 
@@ -76,7 +107,7 @@ for L in range(N_layers-1):
         Z[L].append(0)
         Y[L].append(0)
         for i in range(N[L+1]):
-            a=np.random.uniform()
+            a=np.random.uniform()-0.5
             W[L][j].append(a)
             s+=a
         #Normalisation
@@ -90,50 +121,59 @@ Y.append([])
 for j in range(N[N_layers-1]):
     ERR[N_layers-1].append(0)
     Z[N_layers-1].append(0)
-    Y[N_layers-1].append(0)
-        
-#Remplissage des tableaux de test :       
-for k in range(N_test):
-    a=np.random.uniform()
-    T_input[k][0]=(a-0.5)*2*np.pi
-    indice_output=int(100*round(0.5*(1+np.sin((a-0.5)*2*np.pi)),2))
-    T_output[k][indice_output]=1
-
-#######################################################
-
-for k in range(N_test):
-    #Calcul des sorties de chaque layer :
-    for j in range(N[0]):
-        Y[0][j]=T_input[k][0]
-        Z[0][j]=sigmoid(Y[0][j])
-    for L in range(1,N_layers):
-        for i in range(N[L]):
-            Y[L][i]=sum([W[L-1][j][i]*Z[L-1][j] for j in range(N[L-1])])
-            Z[L][i]=sigmoid(Y[L][i])        
-
-    for j in range(N[N_layers-1]):
-        ERR[N_layers-1][j]=(Z[N_layers-1][j]-T_output[k][j])*Z[N_layers-1][j]*(1-Z[N_layers-1][j])
-    for L in range(1,N_layers-2):        
-        L=N_layers-1-L
-        for j in range(N[L]):
-            ERR[L][j]=Z[L][j]*(1-Z[L][j])*sum([ERR[L+1][k]*W[L][j][k] for k in range(N[L+1])])
+    Y[N_layers-1].append(0)                    
             
-    for L in range(1,N_layers):
-        for k in range(N[L]):
+for n in range(N_test_data):            
+            
+    #######################################################
+    
+    #On mélange la liste
+    T=np.linspace(0,N_test-1,N_test,dtype='int')
+    rand.shuffle(T)
+    
+    for k in T:    
+        #Calcul des sorties de chaque layer :
+        for j in range(N[0]):
+            #Normalisation et centrage (approximatif) en 0
+            Y[0][j]=T_input[k][j]/max(T_input[k])-0.4
+            Z[0][j]=Y[0][j]
+        for L in range(1,N_layers):
+            for i in range(N[L]):
+                Y[L][i]=sum([W[L-1][j][i]*Z[L-1][j] for j in range(N[L-1])])
+                Z[L][i]=sigmoid(Y[L][i])
+        #Backpropagation
+        for j in range(N[N_layers-1]):
+            ERR[N_layers-1][j]=(Z[N_layers-1][j]-T_output[k][j])*Z[N_layers-1][j]*(1-Z[N_layers-1][j])
+        for L in reversed(range(1,N_layers-1)):
+            for j in range(N[L]):
+                ERR[L][j]=Z[L][j]*(1-Z[L][j])*sum([ERR[L+1][i]*W[L][j][i] for i in range(N[L+1])])
+        #Algorithme de descente du gradient
+        for L in range(1,N_layers):
             for j in range(N[L-1]):
-                for compteur in range(N_iter):
-                    W[L-1][j][k]-=delta*ERR[L][k]*Z[L-1][j]
-                    
-########################################################
-                    
+                for i in range(N[L]):
+                    for compteur in range(N_iter):
+                        W[L-1][j][i]-=delta*ERR[L][i]*Z[L-1][j]
+    
+    ########################################################
+                        
+
 #Test véritable !
-for j in range(N[0]):
-    Y[0][j]=np.pi/6
-    Z[0][j]=np.pi/6
+Y[0][0]=5.1
+Y[0][1]=3.5
+Y[0][2]=1.4
+Y[0][3]=0.2
+
+for j in range(N[0]):   
+    #Normalisation
+    Z[0][j]=Y[0][j]/max(Y[0])-0.4
 for L in range(1,N_layers):
     for i in range(N[L]):
         Y[L][i]=sum([W[L-1][j][i]*Z[L-1][j] for j in range(N[L-1])])
         Z[L][i]=sigmoid(Y[L][i])  
-        
-print((Z.index(max(Z))/100.-0.5)*2)
 
+if Z[N_layers-1].index(max(Z[N_layers-1]))==0:
+    print("iris-setosa")
+elif Z[N_layers-1].index(max(Z[N_layers-1]))==1:
+    print("iris-versicolor")
+elif Z[N_layers-1].index(max(Z[N_layers-1]))==2:
+    print("iris-virginica")
