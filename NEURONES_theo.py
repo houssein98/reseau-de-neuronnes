@@ -2,7 +2,7 @@
 """
 Created on Sat Apr 28 12:34:03 2018
 
-@author: giraudon
+@author: giraudon@
 """
 
 import numpy as np
