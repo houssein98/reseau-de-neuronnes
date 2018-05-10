@@ -1,4 +1,5 @@
 import random
+from math import exp
 
 class NeuralNetwork:
     
@@ -15,7 +16,7 @@ class NeuralNetwork:
     ####
 	#fonctions d'activation
     def f(self,x):
-        return np.exp(x)/(1+np.exp(x))
+        return exp(x)/(1+exp(x))
 
     def df(self,x):
         return f(x)*(1-f(x))
