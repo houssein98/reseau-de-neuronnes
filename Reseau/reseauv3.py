@@ -234,7 +234,7 @@ while max(b.E_train)>0.3:
         save(b,'reseau.txt')
         print('Saved : ',i,c)
     if i%10==0:
-        b.delta/=sqrt(2) #on modifiant le pas, la précision passe de 20 à 54% après ~140 itérations (même seed)
+        b.delta/=sqrt(2) #en modifiant le pas, la précision passe de 20 à 54% après ~140 itérations (même seed)
         print(i,b.delta)
     print('_____')
     
