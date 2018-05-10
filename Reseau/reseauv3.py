@@ -1,10 +1,25 @@
 import random
-from math import exp
+from math import exp,sqrt
+
+import pickle
+
+def save(network,path):
+    f=open(path,'wb')
+    pickle.dump(network,f)
+    f.close()
+
+def load(path):
+    f=open(path, 'rb')
+    r=pickle.load(f)
+    f.close()
+    return r
+    
+random.seed(123456789)
 
 class NeuralNetwork:
     
     def __init__(self,dim_entree,delta):
-        # random.seed(6969) #controler l'aléat de w
+        # random.seed(123456789) #controler l'aléat de w
         self.layers=[[0 for i in range(dim_entree)]] #Les neuronnes dans chaque couche
         self.w=[0] #on remplit l'indice 0, car w commence depuis la première couche
         self.Z=[] #Sortie des neuronnes
@@ -16,7 +31,7 @@ class NeuralNetwork:
     ####
     #fonctions d'activation
     def f(self,x):
-        return exp(x)/(1exp(x))
+        return exp(x)/(1+exp(x))
 
     def df(self,x):
         return f(x)*(1-f(x))
@@ -195,7 +210,7 @@ Y_eval = Y[split:]
 
 #Création du modèle
 
-b=NeuralNetwork(input_dim,3)
+b=NeuralNetwork(input_dim,2)
 b.add_layer(16)
 b.add_layer(output_dim)
 
@@ -209,11 +224,18 @@ maxi=0
 while max(b.E_train)>0.3:
     b.train(X_train,Y_train)
     i+=1
+    print('Iteration',i)
     print(max(b.E_train),min(b.E_train))
     c=b.eval(X_eval,Y_eval)
+    
     if c>max_prec:
         max_prec=c
         maxi=i
+        save(b,'reseau.txt')
+        print('Saved : ',i,c)
     if i%10==0:
-        b.delta/=2
+        b.delta/=sqrt(2) #on modifiant le pas, la précision passe de 20 à 54% après ~140 itérations (même seed)
+        print(i,b.delta)
+    print('_____')
+    
             
