@@ -7,26 +7,28 @@ files=[]
 
 length=[]
 dir_length=[]
-c_images=0
-c_a=0
+
+#on explore tous les dossiers, et on rajoute les fichiers/leurs paths sans les classifier
 while len(paths)!=0:
 
     p=paths.pop(0)
 
     if os.path.isdir(p):
+        
+        #compte la taille des dossiers
         if len(os.listdir(p)) not in length:
             length.append(len(os.listdir(p)))
             dir_length.append([p])
         else:
-            dir_length[length.index(len(os.listdir(p)))].append(p)
+            dir_length[length.index(len(os.listdir(p)))].append(p) 
             
         paths+=[p+'/'+pp for pp in os.listdir(p)]
         
     if os.path.isfile(p):
         files.append(p)
         
-images=[]
-dirs=[]
+images=[] #nom complet des images(catégories)
+dirs=[] #dirs[i] = liste des chemins de images[i]
 for f in files:
     t=f.split('/')[-1]
     if t not in images:
@@ -35,15 +37,44 @@ for f in files:
     else:
         dirs[images.index(t)].append(f)
 
-# dataset_path="D:/Téléchargements/1600_1609/organized_dataset"
+#on a pas trop besoin de ça
+dirs.pop(images.index('info.txt'))
+images.pop(images.index('info.txt'))
+dirs.pop(images.index('m1.jpeg'))
+images.pop(images.index('m1.jpeg'))
+dirs.pop(images.index('m2.jpeg'))
+images.pop(images.index('m2.jpeg'))
+
+
+##On divise le dataset 70/30% et on enregistre les images
+
+# train_path="D:/Téléchargements/1600_1609/train"
+# validation_path="D:/Téléchargements/1600_1609/validation"
 # 
-# if not os.path.exists(dataset_path):
-#     os.mkdir(dataset_path)
+# split=0.7 #on split 70/30%
+# c_train=0
+# c_valid=0
+# 
+# if not os.path.exists(train_path):
+#     os.mkdir(train_path)
 #     
 # for i in range(len(images)):
 #     categ,ext=images[i].split('.')
-#     categ=dataset_path+'/'+categ
+#     categ=train_path+'/'+categ
 #     if not os.path.exists(categ):
 #         os.mkdir(categ)
-#     for j in range(len(dirs[i])):
+#     for j in range(round(split*len(dirs[i]))):
 #         copyfile(dirs[i][j], categ+'/'+str(j)+'.'+ext)
+#         c_train+=1
+# 
+# if not os.path.exists(validation_path):
+#     os.mkdir(validation_path)
+#     
+# for i in range(len(images)):
+#     categ,ext=images[i].split('.')
+#     categ=validation_path+'/'+categ
+#     if not os.path.exists(categ):
+#         os.mkdir(categ)
+#     for j in range(split*len(dirs[i]),len(dirs[i])):
+#         copyfile(dirs[i][j], categ+'/'+str(j)+'.'+ext)
+#         c_valid+=1
