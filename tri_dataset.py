@@ -29,25 +29,27 @@ while len(paths)!=0:
         
 images=[] #nom complet des images(catégories)
 dirs=[] #dirs[i] = liste des chemins de images[i]
+to_remove=["info.txt","m1.jpeg","m2.jpeg"] #fichiers à enlever
+
 for f in files:
     t=f.split('/')[-1]
+    
+    if t in to_remove:
+        continue
+    
+    t=t[:6]+t[8:] #on fusionne tous les chromosomes appartenant à la même paire
+    
     if t not in images:
         images.append(t)
         dirs.append([f])
     else:
         dirs[images.index(t)].append(f)
 
-#on a pas trop besoin de ça
-dirs.pop(images.index('info.txt'))
-images.pop(images.index('info.txt'))
-dirs.pop(images.index('m1.jpeg'))
-images.pop(images.index('m1.jpeg'))
-dirs.pop(images.index('m2.jpeg'))
-images.pop(images.index('m2.jpeg'))
 
-
-##On divise le dataset 70/30% et on enregistre les images
-
+# 
+# 
+# On divise le dataset 70/30% et on enregistre les images
+# 
 # train_path="D:/Téléchargements/1600_1609/train"
 # validation_path="D:/Téléchargements/1600_1609/validation"
 # 
