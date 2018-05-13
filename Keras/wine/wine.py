@@ -27,8 +27,9 @@ for i in range(len(L)):
         index.append(n)
         n=random.randrange(0,len(L))
 
-X = np.array([[float(L[i][j]) for j in range(0,len(L[i])-1)] for i in index]) #Données
-Y = np.array([L[i][len(L[i])-1] for i in index])  #Catégories (encore string)
+X = np.array([[float(L[i][j]) for j in range(1,len(L[i]))] for i in index]) #Données
+Y = np.array([L[i][0] for i in index])  #Catégories (encore string)
+
 
 
 

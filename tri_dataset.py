@@ -46,9 +46,21 @@ for f in files:
         dirs[images.index(t)].append(f)
 
 
+dataset_path="D:/Téléchargements/1600_1609/chromosomes"
+
+if not os.path.exists(dataset_path):
+    os.mkdir(dataset_path)
+    
+for i in range(len(images)):
+    categ,ext=images[i].split('.')
+    categ=dataset_path+'/'+categ
+    if not os.path.exists(categ):
+        os.mkdir(categ)
+    for j in range(len(dirs[i])):
+        copyfile(dirs[i][j], categ+'/'+str(j)+'.'+ext)
+
 # 
-# 
-# On divise le dataset 70/30% et on enregistre les images
+# ##On divise le dataset 70/30% et on enregistre les images
 # 
 # train_path="D:/Téléchargements/1600_1609/train"
 # validation_path="D:/Téléchargements/1600_1609/validation"
@@ -77,6 +89,6 @@ for f in files:
 #     categ=validation_path+'/'+categ
 #     if not os.path.exists(categ):
 #         os.mkdir(categ)
-#     for j in range(split*len(dirs[i]),len(dirs[i])):
+#     for j in range(round(split*len(dirs[i])),len(dirs[i])):
 #         copyfile(dirs[i][j], categ+'/'+str(j)+'.'+ext)
 #         c_valid+=1
