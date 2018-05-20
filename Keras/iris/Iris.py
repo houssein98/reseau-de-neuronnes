@@ -17,7 +17,7 @@ L=f.read().split('\n')[0:-2]
 
 
 for i in range(len(L)):
-    L[i]=L[i].split(',')
+    L[i]=L[i].split(';')
     
   # On randomize les indices avant de les diviser entrainement/précision
 index=[]
