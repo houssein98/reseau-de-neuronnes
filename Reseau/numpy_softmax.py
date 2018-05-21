@@ -115,7 +115,7 @@ class NeuralNetwork:
         #backpropagation
        
         for l in range(len(self.layers)-2,0,-1):
-            if self.activation[-1]!=self.softmax:
+            if self.activation[l]!=self.softmax:
                 #dE/dy =dE/dz * dz/dy
                 dE[l]=np.dot(np.transpose(self.w[l+1]),dE[l+1])*self.activation[l](self.Z[l],True)
             else:
@@ -134,7 +134,6 @@ class NeuralNetwork:
         #             self.w[l][k][j]-=self.delta*dE[l][k]*self.Z[l-1][j]
        
         for l in range(1,len(self.layers)):
-            
             
             self.w[l]-=self.delta*np.dot(dE[l].reshape((len(dE[l]),1)),self.Z[l-1].reshape((1,len(self.Z[l-1]))))
            
@@ -268,7 +267,8 @@ maxi=0
 while max(b.E_train)>0.3:
     b.train(X_train,Y_train)
     i+=1
-    print('Iteration',i," | ", b.E)
+    print('Iteration',i," | ")
+    print(max(b.E_train),min(b.E_train))
     c=b.eval(X_eval,Y_eval)
     
     if c>max_prec:
