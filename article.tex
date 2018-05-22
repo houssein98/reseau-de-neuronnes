@@ -4,16 +4,18 @@
 \usepackage[frenchb]{babel}
 \usepackage{numprint}
 \usepackage{graphicx}
+\usepackage{float}
 
 %opening
 \title{Apprentissage par des réseaux de neurones}
-\author{E. Beghdadi, M. Marrakchi Benazzouz, T. Chabal, Y. Vanlaer, T. Giraudon}
+\author{E. Beghdadi, M. Marrakchi Benazzouz, T. Chabal \\ Y. Vanlaer, T. Giraudon \\  \\ sous la direction de Michel Terré}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
+Ce projet vise à coder un réseau de neurones capables de classer des chromosomes à partir d'images de ceux-ci.
 
 \end{abstract}
 
@@ -33,7 +35,7 @@ jouent un rôle particulier : le premier correspond aux \textit{inputs}, les don
 les données de sortie. Les autres \textit{layers} sont qualifiés d'\textit{hidden layers}.
 \\
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale = 0.4]{layers}
 \caption{Structure du réseau de neurones}
@@ -42,15 +44,27 @@ les données de sortie. Les autres \textit{layers} sont qualifiés d'\textit{hid
 
 Le neurone lui-même est composé d'une porte d'entrée qui réalise la combinaison linéaire des sorties des neurones de la couche
 précédente qui lui sont connectés, pondérés par les poids associés aux liaisons concernées. Un \textit{bias} peut être ajouté
-à la combinaison linéaire; le vecteur composé des \textit{bias} est alors un vecteur lui-même passé en entrée. La valeur obtenue
+à la combinaison linéaire. La valeur obtenue
 passe alors dans une fonction seuil. Ici on utilise la sigmoïde $$ \varphi : x \longmapsto \frac{1}{1+\exp(-x)}$$ qui a l'avantage
 d'être continûment dérivable. La valeur de sortie du neurone est la valeur qu'on obtient alors.
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[scale = 0.6]{neuron}
 \caption{Neurone}
  
 \end{figure}
+
+L'apprentissage se réalise de la façon suivante : on rentre des \textit{inputs} dont on connait les \textit{outputs} et on minimise
+l'erreur, définie comme le carré de la différence entre le vecteur de sortie et celui des \textit{outputs} prévus, et ceci par rapport
+aux poids du réseau. Pour ce faire, on utilise un algorithme de descente du gradient, dont le pas $\delta$ et le nombre d'itérations 
+sont des paramètres. On utilise le même procédé pour les \textit{bias}. On opère ainsi pour l'ensemble des données du \textit{dataset}, 
+dans le désordre et plusieurs fois. Une fois que l'erreur est inférieure à un seuil choisi, le réseau est prêt à être utilisé 
+sur des \textit{inputs} inconnus.
+\\
+Dans ce projet, nous avons tout d'abord tenté de réaliser un réseau de neurones capable de fonctionner sur des exemples simples, comme 
+par exemple la somme de deux nombres binaires petits ou la classification d'espèces d'iris à partir d'un \textit{dataset} trouvé
+sur Internet. Ensuite, nous avons essayé d'utiliser nos réseaux pour classer des chromosomes à partir d'image.
+
 
 \section{Résultats}
 
