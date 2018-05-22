@@ -131,7 +131,8 @@ aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
 print("[INFO] compiling model...")
 model = LeNet.build(width=28, height=28, depth=3, classes=len(trainY[0]))
 opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
-model.compile(loss="binary_crossentropy", optimizer=opt,
+#l'entropie croisée binaire donne des résultats erronés https://stackoverflow.com/questions/42081257/keras-binary-crossentropy-vs-categorical-crossentropy-performance
+model.compile(loss="categorical_crossentropy", optimizer=opt,
     metrics=["accuracy"])
  
 # train the network
