@@ -48,6 +48,8 @@ import matplotlib
 matplotlib.use("Agg")
  
 # import the necessary packages
+from sklearn.preprocessing import LabelEncoder
+
 from keras.preprocessing.image import ImageDataGenerator
 from keras.optimizers import Adam
 from sklearn.model_selection import train_test_split
@@ -61,66 +63,33 @@ import random
 import cv2
 import os
 
+#images dimensions
+w=30
+h=30
 
-os.chdir("D:/Téléchargements/1600_1609")
+os.chdir("D:/Téléchargements/1600_1609/")
 args={}
 args["dataset"]="chromosomes"
-args["model"]="chromosomes.model"
-args["plot"]="chromosomes.png"
+args["model"]="chromosomes"+str(w)+"x"+str(h)+".model"
+args["loss"]="Erreur"+str(w)+"x"+str(h)
+args["acc"]="Precision"+str(w)+"x"+str(h)
+
+
 
 # initialize the number of epochs to train for, initial learning rate,
 # and batch size
-EPOCHS = 25
+EPOCHS = 100
 INIT_LR = 1e-3
 BS = 32
- 
-# initialize the data and labels
-print("[INFO] loading images...")
-data = []
-labels = []
- 
-# grab the image paths and randomly shuffle them
-imagePaths = sorted(list(paths.list_images(args["dataset"])))
-random.seed(42)
-random.shuffle(imagePaths)
 
-# loop over the input images
-for imagePath in imagePaths:
-    # load the image, pre-process it, and store it in the data list
-    image = cv2.imread(imagePath)
-    image = cv2.resize(image, (28, 28))
-    image = img_to_array(image)
-    data.append(image)
-    
-    # extract the class label from the image path and update the
-    # labels list
-    label = imagePath.split(os.path.sep)[-2]
-    labels.append(label)
+with np.load("Dataset2_"+str(w)+"x"+str(h)+".npz") as data:
+    trainX=data['arr_0']
+    trainY=data['arr_1']
+    testX=data['arr_2']
+    testY=data['arr_3']
 
-print('fin')
-# scale the raw pixel intensities to the range [0, 1]
-data = np.array(data, dtype="float") / 255.0
 
- 
-# partition the data into training and testing splits using 75% of
-# the data for training and the remaining 25% for testing
-(trainX, testX, trainY, testY) = train_test_split(data,
-    labels, test_size=0.25, random_state=42)
- 
-# convert the labels from str to vectors
-def label_(labels):
-    # On numérise les catégories en entiers 
-    encoder = LabelEncoder()
-    encoder.fit(labels)
-    encoded_labels = encoder.transform(labels)
-    # On transforme les entiers en vecteurs binaires ( (1,0,0,...) si il appartient à la première catégorie par ex )
-    labels = to_categorical(encoded_labels)
-    return labels
- 
- 
-trainY = label_(trainY)
-testY = label_(testY)
-
+                                
 # construct the image generator for data augmentation
 aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
     height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,
@@ -129,18 +98,22 @@ aug = ImageDataGenerator(rotation_range=30, width_shift_range=0.1,
                                 
 # initialize the model
 print("[INFO] compiling model...")
-model = LeNet.build(width=28, height=28, depth=3, classes=len(trainY[0]))
+model = LeNet.build(width=w, height=h, depth=3, classes=len(trainY[0]))
+
 opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
-#l'entropie croisée binaire donne des résultats erronés https://stackoverflow.com/questions/42081257/keras-binary-crossentropy-vs-categorical-crossentropy-performance
 model.compile(loss="categorical_crossentropy", optimizer=opt,
     metrics=["accuracy"])
+    
  
 # train the network
 print("[INFO] training network...")
+
 H = model.fit_generator(aug.flow(trainX, trainY, batch_size=BS),
     validation_data=(testX, testY), steps_per_epoch=len(trainX) // BS,
-    epochs=EPOCHS, verbose=1)
- 
+    epochs=EPOCHS, verbose=2)
+
+# H = model.fit(trainX,trainY,validation_data=(testX,testY),batch_size=BS,epochs=EPOCHS,verbose=2)
+
 # save the model to disk
 print("[INFO] serializing network...")
 model.save(args["model"])
@@ -149,12 +122,20 @@ model.save(args["model"])
 plt.style.use("ggplot")
 plt.figure()
 N = EPOCHS
-plt.plot(np.arange(0, N), H.history["loss"], label="train_loss")
-plt.plot(np.arange(0, N), H.history["val_loss"], label="val_loss")
-plt.plot(np.arange(0, N), H.history["acc"], label="train_acc")
-plt.plot(np.arange(0, N), H.history["val_acc"], label="val_acc")
-plt.title("Training Loss and Accuracy")
-plt.xlabel("Epoch #")
-plt.ylabel("Loss/Accuracy")
+plt.plot(np.arange(0, N), H.history["acc"], label="Entrainement")
+plt.plot(np.arange(0, N), H.history["val_acc"], label="Validation")
+plt.title("Evolution de la précision en fonction des époques")
+plt.xlabel("Epoque #")
+plt.ylabel("Précision")
+plt.legend(loc="lower right")
+plt.savefig(args["acc"])
+plt.clf()
+
+plt.figure()
+plt.plot(np.arange(0, N), H.history["loss"], label="Entrainement")
+plt.plot(np.arange(0, N), H.history["val_loss"], label="Validation")
+plt.title("Evolution de l'entropie croisée en fonction des époques")
+plt.xlabel("Epoque #")
+plt.ylabel("Erreur")
 plt.legend(loc="lower left")
-plt.savefig(args["plot"])
+plt.savefig(args["loss"])

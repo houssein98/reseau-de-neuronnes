@@ -12,10 +12,13 @@ from imutils import paths
 
 os.chdir("D:/Téléchargements/1600_1609/")
 
+width=28
+height=28
+
 args={}
-args["patient"]="1600_1609/1601-458/1/1.kar"
+args["patient"]="10.kar"
 args["image"]="0.jpeg"
-args["model"]="chromosomes.model"
+args["model"]="chromosomes"+str(w)+"x"+str(h)+".model"
 
 categ=os.listdir("chromosomes")
 
@@ -31,36 +34,73 @@ def predict(image_path):
     image = cv2.imread(image_path)
     orig = image.copy()
     # pre-process the image for classification
-    image = cv2.resize(image, (28, 28))
+    image = cv2.resize(image, (width, height))
     image = image.astype("float") / 255.0
     image = img_to_array(image)
     image = np.expand_dims(image, axis=0)
     # classify the input image
     chromo = model.predict(image)[0]
     # # build the label
-    label = categ[indice_max(chromo)]
+    predicted = categ[indice_max(chromo)]
     proba = np.max(chromo)
-    label = "{}: {:.2f}%".format(label, proba * 100)
-    return label
+    label = "{}: {:.2f}%".format(predicted, proba * 100)
+    return predicted,chromo,label
 
-
-# 
-# label = predict(args["image"])
-#  
-# # # draw the label on the image
-# output = imutils.resize(orig, width=200)
-# cv2.putText(output, label, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX,
-#     0.7, (0, 255, 0), 2)
-#  
-# # show the output image
-# cv2.imshow("Output", output)
-# cv2.waitKey(0)
-
-
+def label_(labels):
+    # On numérise les catégories en entiers 
+    encoder = LabelEncoder()
+    encoder.fit(labels)
+    encoded_labels = encoder.transform(labels)
+    # On transforme les entiers en vecteurs binaires ( (1,0,0,...) si il appartient à la première catégorie par ex )
+    labels = to_categorical(encoded_labels)
+    return labels
+    
+    
+def evaluate_dataset(category_path):
+ 
+    # grab the image paths 
+    imagePaths = sorted(list(paths.list_images(category_path)))
+    data=[]
+    labels=[]
+    # loop over the input images
+    for imagePath in imagePaths:
+        # load the image, pre-process it, and store it in the data list
+        image = cv2.imread(imagePath)
+        image = cv2.resize(image, (width, height))
+        image = img_to_array(image)
+        data.append(image)
+        
+        # extract the class label from the image path and update the
+        # labels listc
+        label = imagePath.split(os.path.sep)[-2]
+        labels.append(label)
+        
+    
+    # scale the raw pixel intensities to the range [0, 1]
+    X = np.array(data, dtype="float") / 255.0
+    Y = label_(labels)
+    print(X.shape)
+    print(Y.shape)
+    return model.evaluate(X,Y,verbose=0)
+    
+    
 
 imagePaths = sorted(list(paths.list_images(args["patient"])))
-labels=[]
-original=[]
+to_remove=["m1.jpeg","m2.jpeg"]
+predicted=[]
+originals=[]
 for image in imagePaths:
-    labels.append(predict(image))
-    original.append(image.split(os.path.sep)[-1])
+    file=image.split(os.path.sep)[-1]
+    
+    if file in to_remove:
+        continue
+        
+    name=file[:file.find("c")+3]
+    originals.append(name)
+    
+    predicted.append(predict(image)[0])
+
+    
+print("Précision : ",np.count_nonzero(np.array(predicted)==np.array(originals))/len(predicted)*100)
+
+
