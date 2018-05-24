@@ -5,6 +5,7 @@
 \usepackage{numprint}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{caption}
 
 %opening
 \title{Apprentissage par des réseaux de neurones}
@@ -47,6 +48,7 @@ précédente qui lui sont connectés, pondérés par les poids associés aux lia
 à la combinaison linéaire. La valeur obtenue
 passe alors dans une fonction seuil. Ici on utilise la sigmoïde $$ \varphi : x \longmapsto \frac{1}{1+\exp(-x)}$$ qui a l'avantage
 d'être continûment dérivable. La valeur de sortie du neurone est la valeur qu'on obtient alors.
+
 \begin{figure}[H]
 \centering
 \includegraphics[scale = 0.6]{neuron}
@@ -56,7 +58,7 @@ d'être continûment dérivable. La valeur de sortie du neurone est la valeur qu
 
 L'apprentissage se réalise de la façon suivante : on rentre des \textit{inputs} dont on connait les \textit{outputs} et on minimise
 l'erreur, définie comme le carré de la différence entre le vecteur de sortie et celui des \textit{outputs} prévus, et ceci par rapport
-aux poids du réseau. Pour ce faire, on utilise un algorithme de descente du gradient, dont le pas $\delta$ et le nombre d'itérations 
+aux poids du réseau. Pour ce faire, on utilise un algorithme de descente du gradient, dont le pas et le nombre d'itérations 
 sont des paramètres. On utilise le même procédé pour les \textit{bias}. On opère ainsi pour l'ensemble des données du \textit{dataset}, 
 dans le désordre et plusieurs fois. Une fois que l'erreur est inférieure à un seuil choisi, le réseau est prêt à être utilisé 
 sur des \textit{inputs} inconnus.
@@ -68,6 +70,37 @@ sur Internet. Ensuite, nous avons essayé d'utiliser nos réseaux pour classer d
 
 \section{Résultats}
 
+\subsection{Classification d'iris}
+
+Nous avons utilisé un \textit{dataset} assez plébiscité par les débutants en \textit{machine learning}. Celui-ci contient $4$ 
+informations : la longueur et la largeur du sépale, ains que celles de la pétale. Ces données sont à chaque fois accompagnées 
+de l'espèce correspondante, soit l'\textit{iris setosa}, l'\textit{iris versicolor} ou l'\textit{iris virginica}.
+
+Ici, la difficulté vient du réglage des paramètres. En effet, plusieurs variables rentrent en compte :
+\begin{itemize}
+ \item le nombre de \textit{hidden layers}
+ \item la taille de chacun d'entre eux
+ \item le pas dans l'algorithme de descente du gradient
+ \item le nombre d'itérations dans celui-ci
+ \item la précision demandée sur l'erreur finale
+\end{itemize}
+
+Par exemple, si le nombre de neurones est trop petit, on cours le risque de rencontrer le problème d'\textit{underfitting}, c'est à dire
+que le réseau n'est pas assez riche pour apprendre des données. Au contraire, s'il y a trop de neurones, il peut 
+se passer le problème inverse, celui de l'\textit{overfitting}, où le réseau apprend ``par cœur'' le \textit{dataset} et est inefficace 
+sur des données non contenues dans celui-ci. \\
+Après la détermination des paramètres permettant de minimiser l'erreur en un temps de calcul raisonnable, nous avons réussi à obtenir un 
+réseau performant. Voici le profil de l'erreur :
+\begin{figure}[H]
+\centering
+\captionsetup{justification=centering,margin=2cm}
+\includegraphics[scale = 0.6]{erreur_iris}
+\caption{Evolution de l'erreur en fonction du nombre d'entraînements sur le \textit{dataset}}
+ 
+\end{figure}
+
+
+
 \section{Discussion}
 
 \section{Conclusion}
@@ -78,3 +111,4 @@ https://www.google.com/imgres?imgurl=http%3A%2F%2Fneuralnetworksanddeeplearning.
 https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.codeproject.com%2FKB%2Fdotnet%2Fpredictor%2Fneuronmodel.jpg&imgrefurl=https%3A%2F%2Fwww.codeproject.com%2FArticles%2F175777%2FFinancial-predictor-via-neural-network&docid=ANecEnYoAqzpQM&tbnid=PKC-AKzH-pbV8M%3A&vet=10ahUKEwjGyd2zjoXbAhVQJFAKHWdJBNYQMwjPASgYMBg..i&w=400&h=303&client=ubuntu&bih=647&biw=1301&q=neural%20network%20neuron&ved=0ahUKEwjGyd2zjoXbAhVQJFAKHWdJBNYQMwjPASgYMBg&iact=mrc&uact=8
 
 \end{document}
+
