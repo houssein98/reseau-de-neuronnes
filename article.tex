@@ -16,7 +16,7 @@
 \maketitle
 
 \begin{abstract}
-Ce projet vise à coder un réseau de neurones capables de classer des chromosomes à partir d'images de ceux-ci.
+Ce projet vise à coder un réseau de neurones capable de classer des données variés.
 
 \end{abstract}
 
@@ -63,9 +63,17 @@ sont des paramètres. On utilise le même procédé pour les \textit{bias}. On o
 dans le désordre et plusieurs fois. Une fois que l'erreur est inférieure à un seuil choisi, le réseau est prêt à être utilisé 
 sur des \textit{inputs} inconnus.
 \\
+\\
+Bien que cet algorithme ait été élaboré dans les années 80, il ne pouvait pas vraiment être utilisé efficacement à l'époque à cause 
+du manque de données sur lesquelles s'entraîner. C'est lors de ces dernières années qu'il a connu un renouveau considérable grâce
+à l'émergence du \textit{big data}, un ensemble de technologies permettant la collecte et le traitement efficace d'un très grand nombre
+de données. Les réseaux de neurones sont donc un sujet majeur du monde actuel, capables de donner des informations précises sur des systèmes variés.
+\\
+\\
 Dans ce projet, nous avons tout d'abord tenté de réaliser un réseau de neurones capable de fonctionner sur des exemples simples, comme 
-par exemple la somme de deux nombres binaires petits ou la classification d'espèces d'iris à partir d'un \textit{dataset} trouvé
-sur Internet. Ensuite, nous avons essayé d'utiliser nos réseaux pour classer des chromosomes à partir d'image.
+la somme de deux nombres binaires petits ou la classification d'espèces d'iris à partir d'un \textit{dataset} trouvé
+sur Internet. Ensuite, nous avons essayé d'adapter nos réseaux à une problématique plus complexe, la classification de chromosomes
+à partir d'images.
 
 
 \section{Résultats}
@@ -91,6 +99,7 @@ se passer le problème inverse, celui de l'\textit{overfitting}, où le réseau 
 sur des données non contenues dans celui-ci. \\
 Après la détermination des paramètres permettant de minimiser l'erreur en un temps de calcul raisonnable, nous avons réussi à obtenir un 
 réseau performant. Voici le profil de l'erreur :
+
 \begin{figure}[H]
 \centering
 \captionsetup{justification=centering,margin=2cm}
@@ -99,9 +108,18 @@ réseau performant. Voici le profil de l'erreur :
  
 \end{figure}
 
+L'erreur converge donc vers une valeur d'environ $5 \% $.
+
+\subsection{Somme de deux nombres binaires}
 
 
 \section{Discussion}
+
+Pour apprendre de \textit{datasets} simples, c'est à dire de quelques \textit{inputs}, un réseau de neurones classique est suffisant : l'erreur converge
+rapidement vers une erreur assez faible. Cette limite est toutefois non nulle, ce qui peut être un problème dans certains domaines. En effet, 
+s'il n'est pas forcément très grave de se tromper dans $5 \% $ des cas lorsqu'on classe des iris, il est bien plus grave de se tromper à ce taux lorsqu'on 
+cherche des terroristes : dans ce cas, les ``faux positifs'' où l'on arrête des personnes innocentes $5$ fois sur $100$ sont très délicats à gérer.
+Ce réseau de neurones ne peut donc pas être utilisé universellement, une réflexion sur la tolérance de l'erreur doit toujours être menée.
 
 \section{Conclusion}
 
@@ -111,4 +129,3 @@ https://www.google.com/imgres?imgurl=http%3A%2F%2Fneuralnetworksanddeeplearning.
 https://www.google.com/imgres?imgurl=https%3A%2F%2Fwww.codeproject.com%2FKB%2Fdotnet%2Fpredictor%2Fneuronmodel.jpg&imgrefurl=https%3A%2F%2Fwww.codeproject.com%2FArticles%2F175777%2FFinancial-predictor-via-neural-network&docid=ANecEnYoAqzpQM&tbnid=PKC-AKzH-pbV8M%3A&vet=10ahUKEwjGyd2zjoXbAhVQJFAKHWdJBNYQMwjPASgYMBg..i&w=400&h=303&client=ubuntu&bih=647&biw=1301&q=neural%20network%20neuron&ved=0ahUKEwjGyd2zjoXbAhVQJFAKHWdJBNYQMwjPASgYMBg&iact=mrc&uact=8
 
 \end{document}
-
